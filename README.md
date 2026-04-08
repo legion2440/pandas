@@ -1,29 +1,194 @@
 # Pandas
 
-Minimal audit-oriented solution for the 01-edu `pandas` subject.
+Минимальное решение задания `pandas` от 01-edu.
 
-Structure:
+В репозитории находится 5 Jupyter Notebook - по одному на каждое упражнение. Ноутбуки сохранены с выполненными outputs. Решение сделано в подходе Pandas-first и максимально близко к требованиям subject и audit.
 
-- `requirements.txt` for the environment from `ex00`
-- `ex00/ex00.ipynb` environment and import checks
-- `ex01/ex01.ipynb` DataFrame creation from NumPy array and Pandas Series
-- `ex02/ex02.ipynb` electric power consumption manipulations
-- `ex03/ex03.ipynb` e-commerce purchases answers
-- `ex04/ex04.ipynb` missing-values handling
+## Обзор
 
-Notes:
+Проект включает:
 
-- The notebooks are written with Pandas-first solutions.
-- Each notebook prefers local files from `data/` when they are present.
-- If `data/` is empty, the notebooks fall back to the original subject sources.
+- подготовку окружения для Python, Jupyter, NumPy и Pandas
+- базовое создание DataFrame
+- очистку и преобразование реального датасета по потреблению электроэнергии
+- ответы на аналитические вопросы по датасету e-commerce
+- обработку пропусков в датасете iris
 
-Run locally:
+## Что реализовано
+
+### Exercise 00 - Окружение и библиотеки
+
+`ex00/ex00.ipynb`
+
+Проверяет, что окружение готово для выполнения задания:
+
+- версия Python `>= 3.9`
+- `jupyter`, `numpy` и `pandas` импортируются без ошибок
+
+### Exercise 01 - Первый DataFrame
+
+`ex01/ex01.ipynb`
+
+Создаёт модельный DataFrame двумя способами:
+
+- из NumPy array
+- из Pandas Series
+
+Также выводит:
+
+- тип каждой колонки
+- тип первого значения в каждой колонке
+
+В ноутбуке сохранён ожидаемый нестандартный индекс: `1, 3, 5, 7, 9`.
+
+### Exercise 02 - Electric power consumption
+
+`ex02/ex02.ipynb`
+
+Работает с датасетом household power consumption и учитывает требования аудита:
+
+- удаляет `Time`, `Sub_metering_2`, `Sub_metering_3`
+- переводит `Date` в индекс типа `datetime64[ns]`
+- приводит числовые колонки через `pd.to_numeric(..., errors="coerce")`
+- использует `describe()` для краткого обзора датасета
+- удаляет строки с пропусками через `dropna()`
+- изменяет `Sub_metering_1` через `df.loc[:, "Sub_metering_1"] = ...`
+- фильтрует строки по дате и напряжению
+- выводит 88888-ю строку
+- находит дату максимального `Global_active_power`
+- сортирует первые три колонки по условиям задания
+- считает дневное среднее `Global_active_power` через `groupby`
+
+### Exercise 03 - E-commerce purchases
+
+`ex03/ex03.ipynb`
+
+Даёт ответы на все 12 вопросов средствами Pandas, включая:
+
+- размер датасета
+- среднее, минимум и максимум `Purchase Price`
+- количество по языку и профессии
+- распределение покупок `AM/PM`
+- топ профессий
+- поиск по номеру лота
+- поиск по номеру банковской карты
+- количество покупок через American Express дороже `$95`
+- количество карт с окончанием срока в `2025`
+- топ почтовых доменов
+
+### Exercise 04 - Handling missing values
+
+`ex04/ex04.ipynb`
+
+Использует датасет iris после удаления колонки `flower`.
+
+Реализованы две стратегии заполнения пропусков:
+
+1. Смешанная стратегия по колонкам:
+   - `sepal_length` -> среднее значение
+   - `sepal_width` -> медиана
+   - `petal_length` -> `0`
+   - `petal_width` -> `0`
+2. Заполнение каждой колонки её медианой
+
+Дополнительно:
+- обнаруживаются отрицательные и аномально большие значения в датасете
+- отдельно выводится строка с индексом `122`
+- объясняется, почему заполнение пропусков средним или `0` может быть плохой идеей при наличии выбросов и некорректных значений
+
+## Структура проекта
+
+```text
+.
+├── README.md
+├── requirements.txt
+├── ex00/
+│   └── ex00.ipynb
+├── ex01/
+│   └── ex01.ipynb
+├── ex02/
+│   └── ex02.ipynb
+├── ex03/
+│   └── ex03.ipynb
+├── ex04/
+│   └── ex04.ipynb
+└── data/
+```
+
+## Требования
+
+### Python
+
+- Python `3.9+`
+
+### Библиотеки
+
+В проекте используются:
+
+- `jupyter`
+- `numpy`
+- `pandas`
+- `tabulate`
+
+Установка зависимостей:
 
 ```bash
 python -m pip install -r requirements.txt
+```
+
+## Как запускать
+
+### Запуск одного ноутбука
+
+```bash
+python -m jupyter nbconvert --execute --inplace ex02/ex02.ipynb
+```
+
+Замени `ex02/ex02.ipynb` на нужный ноутбук.
+
+### Запуск всех ноутбуков
+
+```bash
 python -m jupyter nbconvert --execute --inplace ex00/ex00.ipynb
 python -m jupyter nbconvert --execute --inplace ex01/ex01.ipynb
 python -m jupyter nbconvert --execute --inplace ex02/ex02.ipynb
 python -m jupyter nbconvert --execute --inplace ex03/ex03.ipynb
 python -m jupyter nbconvert --execute --inplace ex04/ex04.ipynb
 ```
+
+## Источники данных
+
+Ноутбуки в первую очередь используют локальные файлы из папки `data/`, если они уже присутствуют.
+
+Если локальный датасет отсутствует, ноутбук может брать исходный файл из оригинального источника задания или по raw URL, чтобы упражнение всё равно можно было выполнить.
+
+## Примечания для аудита
+
+Репозиторий оформлен так, чтобы его было удобно проверять:
+
+- outputs сохранены внутри ноутбуков
+- решения сделаны в подходе Pandas-first, а не NumPy-first
+- индекс `Date` в `ex02` явно приведён к `datetime64[ns]`
+- в `ex04` проверяются аномальные значения и выводится строка `122`
+
+## TOC
+
+- [Обзор](#обзор)
+- [Что реализовано](#что-реализовано)
+  - [Exercise 00 - Окружение и библиотеки](#exercise-00---окружение-и-библиотеки)
+  - [Exercise 01 - Первый DataFrame](#exercise-01---первый-dataframe)
+  - [Exercise 02 - Electric power consumption](#exercise-02---electric-power-consumption)
+  - [Exercise 03 - E-commerce purchases](#exercise-03---e-commerce-purchases)
+  - [Exercise 04 - Handling missing values](#exercise-04---handling-missing-values)
+- [Структура проекта](#структура-проекта)
+- [Требования](#требования)
+  - [Python](#python)
+  - [Библиотеки](#библиотеки)
+- [Как запускать](#как-запускать)
+  - [Запуск одного ноутбука](#запуск-одного-ноутбука)
+  - [Запуск всех ноутбуков](#запуск-всех-ноутбуков)
+- [Источники данных](#источники-данных)
+- [Примечания для аудита](#примечания-для-аудита)
+
+## Автор
+- Nazar Yestayev (@nyestaye / @legion2440)
